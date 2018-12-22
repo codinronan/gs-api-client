@@ -30,8 +30,11 @@ const gsapiClient = {
 	},
 	logout() {
 		return this._fetch( "POST", "logout", { confirm: true } )
-			.then( res => {
-				this._deleteMe( res );
+			.then( res => this._deleteMe( res ) );
+	},
+	logoutRefresh() {
+		return this.logout()
+			.then( () => {
 				setTimeout( () => location.href =
 					location.origin + location.pathname, 500 );
 			} );
