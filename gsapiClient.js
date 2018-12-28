@@ -26,7 +26,10 @@ const gsapiClient = {
 	},
 	getUser( username ) {
 		return this._fetch( "GET", `getUser?username=${ username }` )
-			.then( res => res.data );
+			.then( ( { data } ) => {
+				data.user.usernameLow = data.user.username.toLowerCase();
+				return data;
+			} );
 	},
 	logout() {
 		return this._fetch( "POST", "logout", { confirm: true } )
@@ -44,6 +47,7 @@ const gsapiClient = {
 	_assignMe( { data } ) {
 		Object.assign( this.user, data.user );
 		Object.assign( this.compositions, data.compositions );
+		data.user.usernameLow =
 		this.user.usernameLow = this.user.username.toLowerCase();
 		return data;
 	},
