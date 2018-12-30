@@ -42,6 +42,10 @@ const gsapiClient = {
 					location.origin + location.pathname, 500 );
 			} );
 	},
+	updateMyInfo( obj ) {
+		return this._fetch( "POST", `updateMyInfo`, obj )
+			.then( res => this._assignMe( res ) );
+	},
 
 	// private:
 	_assignMe( { data } ) {
