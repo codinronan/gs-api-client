@@ -45,10 +45,17 @@ const gsapiClient = {
 
 	// private:
 	_assignMe( { data } ) {
-		Object.assign( this.user, data.user );
-		Object.assign( this.compositions, data.compositions );
-		data.user.usernameLow =
-		this.user.usernameLow = this.user.username.toLowerCase();
+		const { user, compositions } = data;
+
+		if ( compositions ) {
+			Object.assign( this.compositions, compositions );
+		}
+		if ( user ) {
+			user.usernameLow = user.username.toLowerCase();
+			user.emailpublic = user.emailpublic === "1";
+			user.emailchecked = user.emailchecked === "1";
+			Object.assign( this.user, user );
+		}
 		return data;
 	},
 	_deleteMe( res ) {
