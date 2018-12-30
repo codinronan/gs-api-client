@@ -81,16 +81,11 @@ const gsapiClient = {
 			.then( res => this._fetchThen( res ) );
 	},
 	_fetchThen( res ) {
-		if ( res.ok ) {
-			return res;
-		} else {
-			const msg = this.errorCode[ res.msg ];
-
-			if ( msg ) {
-				res.msg = msg;
-			}
+		if ( !res.ok ) {
+			res.msg = this.errorCode[ res.msg ] || res.msg;
 			throw( res );
 		}
+		return res;
 	},
 
 	errorCode: {
