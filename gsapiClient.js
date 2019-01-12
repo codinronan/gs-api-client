@@ -43,8 +43,12 @@ const gsapiClient = {
 			} );
 	},
 	updateMyInfo( obj ) {
-		return this._fetch( "POST", `updateMyInfo`, obj )
+		return this._fetch( "POST", "updateMyInfo", obj )
 			.then( res => this._assignMe( res ) );
+	},
+	saveComposition( cmp ) {
+		return this._fetch( "POST", "saveComposition",
+			{ composition: JSON.stringify( cmp ) } );
 	},
 
 	// private:
