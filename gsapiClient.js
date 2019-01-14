@@ -50,6 +50,9 @@ const gsapiClient = {
 		return this._fetch( "POST", "saveComposition",
 			{ composition: JSON.stringify( cmp ) } );
 	},
+	deleteComposition( id ) {
+		return this._fetch( "POST", "deleteComposition", { id } );
+	},
 
 	// private:
 	_assignMe( { data } ) {
