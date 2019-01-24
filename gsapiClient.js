@@ -30,6 +30,9 @@ const gsapiClient = {
 	recoverPassword( email ) {
 		return this._fetch( "POST", "recoverPassword", { email } );
 	},
+	resetPassword( email, code, pass ) {
+		return this._fetch( "POST", "resetPassword", { email, code, pass } );
+	},
 	getUser( username ) {
 		return this._fetch( "GET", `getUser?username=${ username }` )
 			.then( ( { data } ) => {
@@ -124,6 +127,7 @@ const gsapiClient = {
 		"username:too-short": "The username is too short",
 		"username:duplicate": "This username is already taken",
 		"username:bad-format": "The username can only contains letters, digits and _",
+		"password:bad-code": "Can not change the password because the secret code and the email do not match",
 		"password:already-recovering": "A recovering email has already been sent to this address less than 1 day ago",
 	},
 };
