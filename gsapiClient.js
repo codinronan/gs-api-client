@@ -27,6 +27,9 @@ const gsapiClient = {
 	resendConfirmationEmail() {
 		return this._fetch( "POST", "resendConfirmationEmail", { email: this.user.email } );
 	},
+	recoverPassword( email ) {
+		return this._fetch( "POST", "recoverPassword", { email } );
+	},
 	getUser( username ) {
 		return this._fetch( "GET", `getUser?username=${ username }` )
 			.then( ( { data } ) => {
@@ -114,12 +117,14 @@ const gsapiClient = {
 		"login:fail": "The email/password don't match",
 		"pass:too-short": "The password is too short",
 		"email:too-long": "The email is too long",
+		"email:not-found": "This email is not in the database",
 		"email:duplicate": "This email is already used",
 		"email:bad-format": "The email is not correct",
 		"username:too-long": "The username is too long",
 		"username:too-short": "The username is too short",
 		"username:duplicate": "This username is already taken",
 		"username:bad-format": "The username can only contains letters, digits and _",
+		"password:already-recovering": "A recovering email has already been sent to this address less than 1 day ago",
 	},
 };
 
