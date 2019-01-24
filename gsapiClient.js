@@ -6,9 +6,12 @@ const gsapiClient = {
 		"Content-Type": "application/json; charset=utf-8",
 	} ),
 
+	// store
+	// ........................................................................
 	user: {},
 	compositions: [],
 
+	// ........................................................................
 	getMe() {
 		return this._fetch( "GET", "getMe" )
 			.then( res => this._assignMe( res ) );
@@ -84,17 +87,29 @@ const gsapiClient = {
 			obj.body = JSON.stringify( body );
 		}
 		return fetch( this.url + url, obj )
-			.then( res => res.json() )
+			.then( res => res.text() ) // 1.
+			.then( text => {
+				try {
+					return JSON.parse( text );
+				} catch ( e ) {
+					return {
+						ok: false,
+						code: 500,
+						msg: text,
+					};
+				}
+			} )
 			.then( res => this._fetchThen( res ) );
 	},
 	_fetchThen( res ) {
 		if ( !res.ok ) {
 			res.msg = this.errorCode[ res.msg ] || res.msg;
-			throw( res );
+			throw( res ); // 2.
 		}
 		return res;
 	},
 
+	// ........................................................................
 	errorCode: {
 		"login:fail": "The email/password don't match",
 		"pass:too-short": "The password is too short",
@@ -107,3 +122,14 @@ const gsapiClient = {
 		"username:bad-format": "The username can only contains letters, digits and _",
 	},
 };
+
+/*
+1.
+	Why res.text() instead of res.json() ?
+	To handle the case where PHP returns a text error/exception with a default 200 code.
+
+2.
+	Every not-ok queries will throw the result instead of return it, why?
+	To handle nicely the errors in the UI side, like:
+		query().finally().then( OK, KO )
+*/
