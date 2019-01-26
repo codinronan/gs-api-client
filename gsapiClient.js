@@ -117,12 +117,15 @@ const gsapiClient = {
 
 	// ........................................................................
 	errorCode: {
+		"user:not-connected": "You are not connected",
+		"query:bad-format": "The query is incomplete or corrupted",
 		"login:fail": "The email/password don't match",
 		"pass:too-short": "The password is too short",
 		"email:too-long": "The email is too long",
 		"email:not-found": "This email is not in the database",
 		"email:duplicate": "This email is already used",
 		"email:bad-format": "The email is not correct",
+		"email:not-verified": "Your email is not verified",
 		"username:too-long": "The username is too long",
 		"username:too-short": "The username is too short",
 		"username:duplicate": "This username is already taken",
