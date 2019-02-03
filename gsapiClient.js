@@ -37,6 +37,7 @@ const gsapiClient = {
 		return this._fetch( "GET", `getUser?username=${ username }` )
 			.then( ( { data } ) => {
 				data.user.usernameLow = data.user.username.toLowerCase();
+				data.compositions.forEach( cmp => cmp.data = JSON.parse( cmp.data ) );
 				return data;
 			} );
 	},
@@ -68,6 +69,7 @@ const gsapiClient = {
 		const { user, compositions } = data;
 
 		if ( compositions ) {
+			compositions.forEach( cmp => cmp.data = JSON.parse( cmp.data ) );
 			Object.assign( this.compositions, compositions );
 		}
 		if ( user ) {
