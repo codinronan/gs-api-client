@@ -112,7 +112,7 @@ const gsapiClient = {
 	_fetchThen( res ) {
 		if ( !res.ok ) {
 			res.msg = this.errorCode[ res.msg ] || res.msg;
-			throw( res ); // 2.
+			throw res; // 2.
 		}
 		return res;
 	},
@@ -138,12 +138,10 @@ const gsapiClient = {
 };
 
 /*
-1.
-	Why res.text() instead of res.json() ?
-	To handle the case where PHP returns a text error/exception with a default 200 code.
+1. Why res.text() instead of res.json() ?
+   To handle the case where PHP returns a text error/exception with a default 200 code.
 
-2.
-	Every not-ok queries will throw the result instead of return it, why?
-	To handle nicely the errors in the UI side, like:
-		query().finally().then( OK, KO )
+2. Every not-ok queries will throw the result instead of return it, why?
+   To handle nicely the errors in the UI side, like:
+   query().finally().then( OK, KO )
 */
