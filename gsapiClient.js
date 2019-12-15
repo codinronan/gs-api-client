@@ -9,40 +9,52 @@ const gsapiClient = {
 	// store
 	// ........................................................................
 	user: {},
-	compositions: [],
 
 	// ........................................................................
 	getMe() {
-		return this._fetch( "GET", "getMe" )
-			.then( res => this._assignMe( res ) );
-	},
-	login( email, pass ) {
-		return this._fetch( "POST", "login", { email, pass } )
-			.then( res => this._assignMe( res ) );
-	},
-	signup( username, email, pass ) {
-		return this._fetch( "POST", "createUser", { username, email, pass } )
-			.then( res => this._assignMe( res ) );
-	},
-	resendConfirmationEmail() {
-		return this._fetch( "POST", "resendConfirmationEmail", { email: this.user.email } );
-	},
-	recoverPassword( email ) {
-		return this._fetch( "POST", "recoverPassword", { email } );
-	},
-	resetPassword( email, code, pass ) {
-		return this._fetch( "POST", "resetPassword", { email, code, pass } );
+		return this._fetch( "GET", "getMe.php" )
+			.then( me => this._assignMe( me ) );
 	},
 	getUser( username ) {
-		return this._fetch( "GET", `getUser?username=${ username }` )
+		return this._fetch( "GET", `getUser.php?username=${ username }` )
 			.then( ( { data } ) => {
-				data.user.usernameLow = data.user.username.toLowerCase();
-				data.compositions.forEach( cmp => cmp.data = JSON.parse( cmp.data ) );
+				data.usernameLow = data.username.toLowerCase();
 				return data;
 			} );
 	},
+	getUserCompositions( iduser ) {
+		return this._fetch( "GET", `getUserCompositions.php?id=${ iduser }` )
+			.then( ( { data } ) => {
+				data.forEach( cmp => cmp.data = JSON.parse( cmp.data ) );
+				return data;
+			} );
+	},
+	getComposition( id ) {
+		return this._fetch( "GET", `getComposition.php?id=${ id }` )
+			.then( ( { data } ) => {
+				data.composition.data = JSON.parse( data.composition.data );
+				return data;
+			} );
+	},
+	login( email, pass ) {
+		return this._fetch( "POST", "login.php", { email, pass } )
+			.then( me => this._assignMe( me ) );
+	},
+	signup( username, email, pass ) {
+		return this._fetch( "POST", "createUser.php", { username, email, pass } )
+			.then( me => this._assignMe( me ) );
+	},
+	resendConfirmationEmail() {
+		return this._fetch( "POST", "resendConfirmationEmail.php", { email: this.user.email } );
+	},
+	recoverPassword( email ) {
+		return this._fetch( "POST", "recoverPassword.php", { email } );
+	},
+	resetPassword( email, code, pass ) {
+		return this._fetch( "POST", "resetPassword.php", { email, code, pass } );
+	},
 	logout() {
-		return this._fetch( "POST", "logout", { confirm: true } )
+		return this._fetch( "POST", "logout.php", { confirm: true } )
 			.then( res => this._deleteMe( res ) );
 	},
 	logoutRefresh() {
@@ -53,32 +65,26 @@ const gsapiClient = {
 			} );
 	},
 	updateMyInfo( obj ) {
-		return this._fetch( "POST", "updateMyInfo", obj )
-			.then( res => this._assignMe( res ) );
+		return this._fetch( "POST", "updateMyInfo.php", obj )
+			.then( me => this._assignMe( me ) );
 	},
 	saveComposition( cmp ) {
-		return this._fetch( "POST", "saveComposition",
+		return this._fetch( "POST", "saveComposition.php",
 			{ composition: JSON.stringify( cmp ) } );
 	},
 	deleteComposition( id ) {
-		return this._fetch( "POST", "deleteComposition", { id } );
+		return this._fetch( "POST", "deleteComposition.php", { id } );
 	},
 
 	// private:
-	_assignMe( { data } ) {
-		const { user, compositions } = data;
+	_assignMe( res ) {
+		const u = res.data;
 
-		if ( compositions ) {
-			compositions.forEach( cmp => cmp.data = JSON.parse( cmp.data ) );
-			Object.assign( this.compositions, compositions );
-		}
-		if ( user ) {
-			user.usernameLow = user.username.toLowerCase();
-			user.emailpublic = user.emailpublic === "1";
-			user.emailchecked = user.emailchecked === "1";
-			Object.assign( this.user, user );
-		}
-		return data;
+		u.usernameLow = u.username.toLowerCase();
+		u.emailpublic = u.emailpublic === "1";
+		u.emailchecked = u.emailchecked === "1";
+		Object.assign( this.user, u );
+		return u;
 	},
 	_deleteMe( res ) {
 		Object.keys( this.user ).forEach( k => delete this.user[ k ] );
