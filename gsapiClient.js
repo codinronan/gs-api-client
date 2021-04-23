@@ -1,7 +1,7 @@
 "use strict";
 
 const gsapiClient = {
-	url: "https://api.gridsound.com/",
+	url: "http://localhost/gridsound/api.gridsound.com/api/",
 	headers: Object.freeze( {
 		"Content-Type": "application/json; charset=utf-8",
 	} ),
