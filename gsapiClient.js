@@ -1,106 +1,106 @@
 "use strict";
 
-const gsapiClient = {
-	url: "http://localhost/gridsound/api.gridsound.com/api/",
-	headers: Object.freeze( {
+class gsapiClient {
+	static url = "//localhost/gridsound/api.gridsound.com/api/";
+	static headers = Object.freeze( {
 		"Content-Type": "application/json; charset=utf-8",
-	} ),
+	} );
 
 	// store
 	// ........................................................................
-	user: {},
+	static user = {};
 
 	// ........................................................................
-	getMe() {
-		return this._fetch( "GET", "getMe.php" )
-			.then( me => this._assignMe( me ) );
-	},
-	getUser( username ) {
-		return this._fetch( "GET", `getUser.php?username=${ username }` )
+	static getMe() {
+		return gsapiClient.#fetch( "GET", "getMe.php" )
+			.then( me => gsapiClient.#assignMe( me ) );
+	}
+	static getUser( username ) {
+		return gsapiClient.#fetch( "GET", `getUser.php?username=${ username }` )
 			.then( ( { data } ) => {
 				data.usernameLow = data.username.toLowerCase();
 				return data;
 			} );
-	},
-	getUserCompositions( iduser ) {
-		return this._fetch( "GET", `getUserCompositions.php?id=${ iduser }` )
+	}
+	static getUserCompositions( iduser ) {
+		return gsapiClient.#fetch( "GET", `getUserCompositions.php?id=${ iduser }` )
 			.then( ( { data } ) => {
 				data.forEach( cmp => cmp.data = JSON.parse( cmp.data ) );
 				return data;
 			} );
-	},
-	getComposition( id ) {
-		return this._fetch( "GET", `getComposition.php?id=${ id }` )
+	}
+	static getComposition( id ) {
+		return gsapiClient.#fetch( "GET", `getComposition.php?id=${ id }` )
 			.then( ( { data } ) => {
 				data.composition.data = JSON.parse( data.composition.data );
 				return data;
 			} );
-	},
-	login( email, pass ) {
-		return this._fetch( "POST", "login.php", { email, pass } )
-			.then( me => this._assignMe( me ) );
-	},
-	signup( username, email, pass ) {
-		return this._fetch( "POST", "createUser.php", { username, email, pass } )
-			.then( me => this._assignMe( me ) );
-	},
-	resendConfirmationEmail() {
-		return this._fetch( "POST", "resendConfirmationEmail.php", { email: this.user.email } );
-	},
-	recoverPassword( email ) {
-		return this._fetch( "POST", "recoverPassword.php", { email } );
-	},
-	resetPassword( email, code, pass ) {
-		return this._fetch( "POST", "resetPassword.php", { email, code, pass } );
-	},
-	logout() {
-		return this._fetch( "POST", "logout.php", { confirm: true } )
-			.then( res => this._deleteMe( res ) );
-	},
-	logoutRefresh() {
-		return this.logout()
+	}
+	static login( email, pass ) {
+		return gsapiClient.#fetch( "POST", "login.php", { email, pass } )
+			.then( me => gsapiClient.#assignMe( me ) );
+	}
+	static signup( username, email, pass ) {
+		return gsapiClient.#fetch( "POST", "createUser.php", { username, email, pass } )
+			.then( me => gsapiClient.#assignMe( me ) );
+	}
+	static resendConfirmationEmail() {
+		return gsapiClient.#fetch( "POST", "resendConfirmationEmail.php", { email: gsapiClient.user.email } );
+	}
+	static recoverPassword( email ) {
+		return gsapiClient.#fetch( "POST", "recoverPassword.php", { email } );
+	}
+	static resetPassword( email, code, pass ) {
+		return gsapiClient.#fetch( "POST", "resetPassword.php", { email, code, pass } );
+	}
+	static logout() {
+		return gsapiClient.#fetch( "POST", "logout.php", { confirm: true } )
+			.then( res => gsapiClient.#deleteMe( res ) );
+	}
+	static logoutRefresh() {
+		return gsapiClient.logout()
 			.then( () => {
 				setTimeout( () => location.href =
 					location.origin + location.pathname, 500 );
 			} );
-	},
-	updateMyInfo( obj ) {
-		return this._fetch( "POST", "updateMyInfo.php", obj )
-			.then( me => this._assignMe( me ) );
-	},
-	saveComposition( cmp ) {
-		return this._fetch( "POST", "saveComposition.php",
+	}
+	static updateMyInfo( obj ) {
+		return gsapiClient.#fetch( "POST", "updateMyInfo.php", obj )
+			.then( me => gsapiClient.#assignMe( me ) );
+	}
+	static saveComposition( cmp ) {
+		return gsapiClient.#fetch( "POST", "saveComposition.php",
 			{ composition: JSON.stringify( cmp ) } );
-	},
-	deleteComposition( id ) {
-		return this._fetch( "POST", "deleteComposition.php", { id } );
-	},
+	}
+	static deleteComposition( id ) {
+		return gsapiClient.#fetch( "POST", "deleteComposition.php", { id } );
+	}
 
-	// private:
-	_assignMe( res ) {
+	// ..........................................................................
+	static #assignMe( res ) {
 		const u = res.data;
 
 		u.usernameLow = u.username.toLowerCase();
 		u.emailpublic = u.emailpublic === "1";
 		u.emailchecked = u.emailchecked === "1";
-		Object.assign( this.user, u );
+		Object.assign( gsapiClient.user, u );
 		return u;
-	},
-	_deleteMe( res ) {
-		Object.keys( this.user ).forEach( k => delete this.user[ k ] );
+	}
+	static #deleteMe( res ) {
+		Object.keys( gsapiClient.user ).forEach( k => delete gsapiClient.user[ k ] );
 		return res;
-	},
-	_fetch( method, url, body ) {
+	}
+	static #fetch( method, url, body ) {
 		const obj = {
 			method,
-			headers: this.headers,
+			headers: gsapiClient.headers,
 			credentials: "include",
 		};
 
 		if ( body ) {
 			obj.body = JSON.stringify( body );
 		}
-		return fetch( this.url + url, obj )
+		return fetch( gsapiClient.url + url, obj )
 			.then( res => res.text() ) // 1.
 			.then( text => {
 				try {
@@ -113,18 +113,18 @@ const gsapiClient = {
 					};
 				}
 			} )
-			.then( res => this._fetchThen( res ) );
-	},
-	_fetchThen( res ) {
+			.then( res => gsapiClient.#fetchThen( res ) );
+	}
+	static #fetchThen( res ) {
 		if ( !res.ok ) {
-			res.msg = this.errorCode[ res.msg ] || res.msg;
+			res.msg = gsapiClient.errorCode[ res.msg ] || res.msg;
 			throw res; // 2.
 		}
 		return res;
-	},
+	}
 
 	// ........................................................................
-	errorCode: {
+	static errorCode = {
 		"user:not-connected": "You are not connected",
 		"query:bad-format": "The query is incomplete or corrupted",
 		"login:fail": "The email/password don't match",
@@ -140,8 +140,8 @@ const gsapiClient = {
 		"username:bad-format": "The username can only contains letters, digits and _",
 		"password:bad-code": "Can not change the password because the secret code and the email do not match",
 		"password:already-recovering": "A recovering email has already been sent to this address less than 1 day ago",
-	},
-};
+	};
+}
 
 /*
 1. Why res.text() instead of res.json() ?
